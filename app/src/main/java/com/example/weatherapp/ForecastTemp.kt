@@ -1,3 +1,7 @@
 package com.example.weatherapp
 
-class ForecastTemp (var day: Float, var max: Float, var min: Float)
+data class ForecastTemp (
+    val day: Float,
+    val max: Float,
+    val min: Float
+    )

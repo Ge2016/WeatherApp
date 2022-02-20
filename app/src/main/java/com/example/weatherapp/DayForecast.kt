@@ -1,10 +1,13 @@
 package com.example.weatherapp
 
-class DayForecast (
-    var date: Long,
-    var sunrise: Long,
-    var sunset: Long,
-    var temp: ForecastTemp,
-    var pressure: Float,
-    var humidity: Int
+import com.squareup.moshi.Json
+
+data class DayForecast (
+    @Json(name = "dt") val date: Long,
+    val sunrise: Long,
+    val sunset: Long,
+    val temp: ForecastTemp,
+    val pressure: Float,
+    val humidity: Int,
+    val weather: List<WeatherCondition>
     )
