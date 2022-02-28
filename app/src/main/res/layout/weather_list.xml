@@ -7,7 +7,7 @@
     android:paddingHorizontal="12dp">
 
     <ImageView
-        android:id="@+id/temp_icon"
+        android:id="@+id/temp_img"
         android:layout_width="59dp"
         android:layout_height="55dp"
         android:layout_marginStart="-10dp"
@@ -22,6 +22,7 @@
         android:layout_height="match_parent"
         android:gravity="start|center_vertical"
         android:paddingHorizontal="50dp"
+        android:text="@string/date"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Jan 31" />
 
@@ -31,18 +32,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:gravity="center_vertical"
-        android:text="Sunrise: "
+        android:text="@string/time_sunrise"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Sunrise: "/>
 
     <TextView
         android:id="@+id/time_sunset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:text="Sunset: "
+        android:text="@string/time_sunset"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Sunset: "/>
 
     <TextView
         android:id="@+id/temp_day"
@@ -50,8 +53,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
         android:layout_marginTop="5dp"
-        android:text="Temp: "
-        app:layout_constraintStart_toEndOf="@id/temp_icon"
+        android:text="@string/temp_day"
+        app:layout_constraintStart_toEndOf="@id/temp_img"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -60,9 +63,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
         android:layout_marginBottom="5dp"
-        android:text="High: "
+        android:text="@string/temp_max"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/temp_icon" />
+        app:layout_constraintStart_toEndOf="@id/temp_img"
+        tools:text="High: "/>
 
     <TextView
         android:id="@+id/temp_Lo"
@@ -70,8 +74,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="5dp"
-        android:text="Low: "
+        android:text="@string/temp_min"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/temp_Hi" />
+        app:layout_constraintStart_toEndOf="@id/temp_Hi"
+        tools:text="Low: "/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
