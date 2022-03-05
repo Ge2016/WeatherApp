@@ -4,10 +4,9 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.weatherapp.databinding.WeatherListBinding
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -19,41 +18,35 @@ class Adapter(private val data: List<DayForecast>) : RecyclerView.Adapter<Adapte
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
         private val formatDate = DateTimeFormatter.ofPattern("MMM dd")
         private val formatTime = DateTimeFormatter.ofPattern("h:mm a")
-        private val dateView: TextView = view.findViewById(R.id.date)
-        private val sunriseView: TextView = view.findViewById(R.id.time_sunrise)
-        private val sunsetView: TextView = view.findViewById(R.id.time_sunset)
-        private val tempView: TextView = view.findViewById(R.id.temp_day)
-        private val tempHiView: TextView = view.findViewById(R.id.temp_Hi)
-        private val tempLoView: TextView = view.findViewById(R.id.temp_Lo)
-        private val imgView: ImageView = view.findViewById(R.id.temp_img)
+        private val binding: WeatherListBinding = WeatherListBinding.bind(view)
 
         fun bind(data: DayForecast){
-            val instant = Instant.ofEpochSecond(data.date)
-            val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-            val instant2 = Instant.ofEpochSecond(data.sunrise)
-            val dateTime2 = LocalDateTime.ofInstant(instant2, ZoneId.systemDefault())
-            val instant3 = Instant.ofEpochSecond(data.sunset)
-            val dateTime3 = LocalDateTime.ofInstant(instant3, ZoneId.systemDefault())
+            val dateInstant = Instant.ofEpochSecond(data.date)
+            val dateTime = LocalDateTime.ofInstant(dateInstant, ZoneId.systemDefault())
+            val sunriseInstant = Instant.ofEpochSecond(data.sunrise)
+            val sunriseTime = LocalDateTime.ofInstant(sunriseInstant, ZoneId.systemDefault())
+            val sunsetInstant = Instant.ofEpochSecond(data.sunset)
+            val sunsetTime = LocalDateTime.ofInstant(sunsetInstant, ZoneId.systemDefault())
 
-            sunriseView.append(formatTime.format(dateTime2))
-            sunsetView.append(formatTime.format(dateTime3))
-            dateView.text = formatDate.format(dateTime)
-            tempView.text = itemView.context.getString(R.string.temp_day, data.temp.day.toInt())
-            tempHiView.text = itemView.context.getString(R.string.temp_max, data.temp.max.toInt())
-            tempLoView.text = itemView.context.getString(R.string.temp_min, data.temp.min.toInt())
+            binding.timeSunrise.append(formatTime.format(sunriseTime))
+            binding.timeSunset.append(formatTime.format(sunsetTime))
+            binding.date.text = formatDate.format(dateTime)
+            binding.tempDay.text = itemView.context.getString(R.string.temp_day, data.temp.day.toInt())
+            binding.tempHi.text = itemView.context.getString(R.string.temp_max, data.temp.max.toInt())
+            binding.tempLo.text = itemView.context.getString(R.string.temp_min, data.temp.min.toInt())
 
             val iconName = data.weather.firstOrNull()?.icon
             val iconUrl = "https://openweathermap.org/img/wn/${iconName}@2x.png"
-            Glide.with(itemView).load(iconUrl).into(imgView)
+            Glide.with(itemView).load(iconUrl).into(binding.tempImg)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Adapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.weather_list, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: Adapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(data[position])
     }
 
