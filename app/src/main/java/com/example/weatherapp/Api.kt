@@ -4,7 +4,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface Api {
-
     @GET("weather")
     suspend fun getCurrentConditions(
         @Query("zip") zip: String,

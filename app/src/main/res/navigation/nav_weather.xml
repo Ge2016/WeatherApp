@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragment_search">
+
+    <fragment
+        android:id="@+id/fragment_search"
+        android:name="com.example.weatherapp.SearchFragment"
+        android:label="SearchFragment">
+        <action
+            android:id="@+id/action_searchFragment_to_currentConditionFragment"
+            app:destination="@id/fragment_current"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_current"
+        android:name="com.example.weatherapp.CurrentConditionFragment"
+        android:label="CurrentConditionsFragment">
+        <argument
+            android:name="zipCode"
+            app:argType="string"/>
+        <action
+            android:id="@+id/action_currentConditionFragment_to_ForecastFragment"
+            app:destination="@id/fragment_forecast"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_forecast"
+        android:name="com.example.weatherapp.ForecastFragment"
+        android:label="ForecastFragment" >
+        <argument
+            android:name="zipCode"
+            app:argType="string"/>
+    </fragment>
+
+</navigation>

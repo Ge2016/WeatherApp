@@ -10,10 +10,15 @@ import javax.inject.Inject
 class ForecastViewModel @Inject constructor(private val service: Api) : ViewModel() {
     private val _forecast = MutableLiveData<Forecast>()
     val forecast: LiveData<Forecast> get() = _forecast
+    private var location = ""
+
+    fun passData(zipCode: String){
+        location = zipCode
+    }
 
     fun loadData() = runBlocking {
         launch {
-            _forecast.value = service.getForecast("55101")
+            _forecast.value = service.getForecast(location)
         }
     }
 }

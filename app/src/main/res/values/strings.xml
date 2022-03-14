@@ -15,4 +15,9 @@
     <string name="temp_min">Low: %1$d°</string>
     <string name="time_sunset">Sunset: </string>
     <string name="time_sunrise">Sunrise: </string>
+    <string name="ok">OK</string>
+    <string name="zip_code">zip code</string>
+    <string name="submit">Submit</string>
+    <string name="image_description">Image holder for the weather icon</string>
+    <string name="inputZipText">Enter a zip code:</string>
 </resources>
