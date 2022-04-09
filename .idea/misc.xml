@@ -3,6 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp - Copy (2)/app/src/main/res/layout/activity_current.xml" value="0.1" />
+        <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp - Copy (2)/app/src/main/res/layout/activity_forecast.xml" value="0.2833333333333333" />
+        <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp - Copy (2)/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp - Copy (2)/app/src/main/res/layout/fragment_current.xml" value="0.1" />
+        <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp - Copy (2)/app/src/main/res/layout/fragment_forecast.xml" value="0.1" />
+        <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp - Copy (2)/app/src/main/res/layout/fragment_search.xml" value="0.22" />
+        <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp - Copy (2)/app/src/main/res/layout/weather_list.xml" value="0.1" />
         <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp/app/src/main/res/layout/activity_forecast.xml" value="0.286231884057971" />
         <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/chiax/AndroidStudioProjects/WeatherApp/app/src/main/res/layout/date_list.xml" value="0.22" />

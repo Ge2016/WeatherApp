@@ -1,5 +1,7 @@
 package com.example.weatherapp
 
-data class Forecast (
-    val list: List<DayForecast>
-)
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class Forecast (val list: List<DayForecast>) : Parcelable
