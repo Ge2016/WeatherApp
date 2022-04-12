@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +36,10 @@ class ForecastFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.recyclerView.findViewById(R.id.recyclerView)
         binding.recyclerView.layoutManager = LinearLayoutManager(view.context)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigateUp()
+        }
     }
 
     override fun onResume() {
@@ -41,7 +47,6 @@ class ForecastFragment : Fragment() {
         viewModel.forecast.observe(this){ forecast ->
             binding.recyclerView.adapter = Adapter(forecast.list)
         }
-        viewModel.passData(args.zipCode)
-        viewModel.loadData()
+        viewModel.loadData(args.coordinates)
     }
 }

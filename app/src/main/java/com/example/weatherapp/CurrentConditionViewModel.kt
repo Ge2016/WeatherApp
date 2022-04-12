@@ -3,21 +3,31 @@ package com.example.weatherapp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
-class CurrentConditionViewModel @Inject constructor(private val service: Api) : ViewModel() {
-    private val _currentCondition = MutableLiveData<CurrentCondition>()
-    val currentCondition: LiveData<CurrentCondition> get() = _currentCondition
-    private var location = ""
+class CurrentConditionViewModel @Inject constructor() : ViewModel() {
+    private lateinit var currentConditions: CurrentCondition
+    private val _currentCondition = MutableLiveData<Coordinates?>()
+    val navigateToForecast: LiveData<Coordinates?> = _currentCondition
 
-    fun passData(zipCode: String){
-        location = zipCode
+    private val _viewState = MutableLiveData(State.DEFAULT)
+    val viewState: LiveData<State> = _viewState
+
+    fun loadData(currentConditions: CurrentCondition){
+        this.currentConditions = currentConditions
+        _currentCondition.value = null
+        _viewState.value = _viewState.value?.copy(currentConditions = currentConditions)
     }
-    fun loadData() = runBlocking {
-        launch {
-            _currentCondition.value = service.getCurrentConditions(location)
+
+    fun loadData(){
+        _currentCondition.value = currentConditions.coordinates
+    }
+
+    data class State(
+        val currentConditions: CurrentCondition?
+    ) {
+        companion object {
+            internal val DEFAULT = State(null)
         }
     }
 }
