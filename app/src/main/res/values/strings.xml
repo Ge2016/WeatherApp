@@ -21,4 +21,6 @@
     <string name="image_description">Image holder for the weather icon</string>
     <string name="inputZipText">Enter a zip code:</string>
     <string name="locationButton">Find me by my location</string>
+    <string name="notificationOn">Turn ON notifications?</string>
+    <string name="notificationOff">Turn OFF notifications</string>
 </resources>
