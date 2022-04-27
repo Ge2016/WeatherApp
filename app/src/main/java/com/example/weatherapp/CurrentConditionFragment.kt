@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ class CurrentConditionFragment : Fragment() {
     private lateinit var binding: FragmentCurrentBinding
     @Inject lateinit var viewModel: CurrentConditionViewModel
     private val args: CurrentConditionFragmentArgs by navArgs()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,

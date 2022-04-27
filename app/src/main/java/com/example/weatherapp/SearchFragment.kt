@@ -5,11 +5,14 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,6 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -39,7 +43,7 @@ import javax.inject.Inject
 class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCallback {
     private lateinit var binding: FragmentSearchBinding
     @Inject lateinit var viewModel: SearchViewModel
-    private lateinit var locationPermissionRequest: ActivityResultLauncher<Array<String>>
+    private lateinit var permissionRequest: ActivityResultLauncher<Array<String>>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,7 +52,6 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
     ): View {
         binding = FragmentSearchBinding.inflate(inflater)
         (activity as AppCompatActivity).supportActionBar?.title = "Search"
-
         return binding.root
     }
 
@@ -72,7 +75,7 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
             findNavController().navigate(action)
         }
 
-        locationPermissionRequest = registerForActivityResult(
+        permissionRequest = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ){ permissions ->
             when {
@@ -87,15 +90,11 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
 
         binding.zipCode.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
             }
-
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 viewModel.updateZipCode(p0.toString())
             }
-
             override fun afterTextChanged(p0: Editable?) {
-
             }
         })
 
@@ -108,7 +107,7 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
         }
 
         binding.locationButton.setOnClickListener {
-            requestLocation()
+            requestLocationRationale()
             try {
                 viewModel.loadLatLon()
             } catch (e: retrofit2.HttpException) {
@@ -121,28 +120,34 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
             binding.notificationButton.text = context?.getString(R.string.notificationOn)
         }
 
+        var flag = true
         binding.notificationButton.setOnClickListener {
-            createNotification()
-            binding.notificationButton.text = context?.getString(R.string.notificationOff)
+            if (flag) {
+                flag = false
+                requestNotificationPermission()
+                createNotificationChannel()
+                createNotification()
+                val intent = Intent(context, MainActivity::class.java)
+                startActivity(intent)
+                binding.notificationButton.text = context?.getString(R.string.notificationOff)
+            } else {
+                flag = true
+                binding.notificationButton.visibility = View.GONE
+            }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        requestLocationUpdates()
-    }
-
-    private fun requestLocation() {
+    private fun requestLocationRationale() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(
                 this.requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
             AlertDialog.Builder(this.requireContext()).setTitle("Request")
                 .setTitle("Allow this app access to your location?")
                 .setNeutralButton("Ok") { _, _ ->
-                    locationPermissionRequest.launch(
+                    permissionRequest.launch(
                         arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION))
                 }.show()
         } else {
-            locationPermissionRequest.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION))
+            permissionRequest.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION))
         }
     }
 
@@ -179,32 +184,61 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
         }
     }
 
-    private fun createNotification(){
-        val intent = Intent(context, CurrentConditionFragment::class.java).apply{
-            var flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun requestNotificationPermission(){
+        if (ActivityCompat.checkSelfPermission(
+                this.requireContext(), Manifest.permission.FOREGROUND_SERVICE) !=
+            PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this.requireContext(), Manifest.permission.FOREGROUND_SERVICE) !=
+            PackageManager.PERMISSION_GRANTED) {
+            requestBackgroundPermissionRationale()
+        } else {
+            print("No permission granted.")
+            return
         }
+    }
 
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this.context, 0,
-            intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun requestBackgroundPermissionRationale(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this.requireActivity(), Manifest.permission.FOREGROUND_SERVICE)) {
+            AlertDialog.Builder(this.requireContext()).setTitle("Request")
+                .setTitle("Allow this app run in the background?")
+                .setNeutralButton("Ok") { _, _ ->
+                    permissionRequest.launch(
+                        arrayOf(Manifest.permission.FOREGROUND_SERVICE))
+                }.show()
+        } else {
+            permissionRequest.launch(arrayOf(Manifest.permission.FOREGROUND_SERVICE))
+        }
+    }
 
+    private fun createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("Weather Notification", "Weather Notification",
+            val channel = NotificationChannel("C1", "Notification Channel",
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             val notificationManager: NotificationManager =
                 activity?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
+    }
 
-        val builder = NotificationCompat.Builder(this.requireContext(), "Weather Notification")
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun createNotification(){
+        val intent = Intent(context, LocalService::class.java).apply{
+            var flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(this.context, 0,
+            intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(this.requireContext(), "C2")
             .setSmallIcon(R.drawable.bell).setContentTitle("Weather Notification")
             .setContentText("Check updated weather condition.")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setContentIntent(pendingIntent)
 
-//        startForeground(ONGOING_NOTIFICATION_ID, notification)
         NotificationManagerCompat.from(this.requireContext()).notify(0, builder.build())
     }
-
-
 }
