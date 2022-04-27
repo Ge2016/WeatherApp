@@ -2,13 +2,7 @@ package com.example.weatherapp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.text.Editable
@@ -22,16 +16,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.ErrorDialogFragment.Companion.TAG
 import com.example.weatherapp.databinding.FragmentSearchBinding
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -48,7 +37,6 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
     ): View {
         binding = FragmentSearchBinding.inflate(inflater)
         (activity as AppCompatActivity).supportActionBar?.title = "Search"
-
         return binding.root
     }
 
@@ -115,16 +103,6 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
                 ErrorDialogFragment().show(childFragmentManager, TAG)
             }
         }
-
-        binding.bellButton.setOnClickListener{
-            binding.notificationButton.visibility = View.VISIBLE
-            binding.notificationButton.text = context?.getString(R.string.notificationOn)
-        }
-
-        binding.notificationButton.setOnClickListener {
-            createNotification()
-            binding.notificationButton.text = context?.getString(R.string.notificationOff)
-        }
     }
 
     override fun onResume() {
@@ -135,8 +113,7 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
     private fun requestLocation() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(
                 this.requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            AlertDialog.Builder(this.requireContext()).setTitle("Request")
-                .setTitle("Allow this app access to your location?")
+            AlertDialog.Builder(this.requireContext()).setTitle("Request").setTitle("Allow this app access to your location?")
                 .setNeutralButton("Ok") { _, _ ->
                     locationPermissionRequest.launch(
                         arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION))
@@ -178,33 +155,4 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
             Log.d("SearchFragment", it.toString())
         }
     }
-
-    private fun createNotification(){
-        val intent = Intent(context, CurrentConditionFragment::class.java).apply{
-            var flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this.context, 0,
-            intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("Weather Notification", "Weather Notification",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            val notificationManager: NotificationManager =
-                activity?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val builder = NotificationCompat.Builder(this.requireContext(), "Weather Notification")
-            .setSmallIcon(R.drawable.bell).setContentTitle("Weather Notification")
-            .setContentText("Check updated weather condition.")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-
-//        startForeground(ONGOING_NOTIFICATION_ID, notification)
-        NotificationManagerCompat.from(this.requireContext()).notify(0, builder.build())
-    }
-
-
 }
