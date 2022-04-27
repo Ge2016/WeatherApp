@@ -11,9 +11,9 @@ class ForecastViewModel @Inject constructor(private val service: Api) : ViewMode
     private val _forecast = MutableLiveData<Forecast>()
     val forecast: LiveData<Forecast> get() = _forecast
 
-    fun loadData(zipCode: String) = runBlocking {
+    fun loadData(coordinates: Coordinates) = runBlocking {
         launch {
-            _forecast.value = service.getForecast(zipCode)
+            _forecast.value = service.getForecast(coordinates.latitude.toString(), coordinates.longitude.toString())
         }
     }
 }

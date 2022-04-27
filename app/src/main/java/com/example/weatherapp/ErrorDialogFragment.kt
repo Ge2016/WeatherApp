@@ -9,7 +9,7 @@ class ErrorDialogFragment: DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         AlertDialog.Builder(requireContext())
-            .setMessage("Error fetching data for that zip code")
+            .setMessage("Error fetching data. Try again")
             .setPositiveButton(R.string.ok, null).create()
 
     companion object{

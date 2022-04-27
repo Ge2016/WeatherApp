@@ -9,17 +9,22 @@ import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(private val service: Api) : ViewModel() {
     private var zipCode: String? = null
+    private var lat: Double = 0.0
+    private var lon: Double = 0.0
+
     private val _enableButton = MutableLiveData(false)
     private val _showErrorDialog = MutableLiveData(false)
-    private val _currentConditions = MutableLiveData<CurrentCondition>()
+    private val _location = MutableLiveData<CurrentCondition>()
 
     val showErrorDialog: LiveData<Boolean>
         get() = _showErrorDialog
     val enableButton: LiveData<Boolean>
         get() = _enableButton
+    val currentCondition: LiveData<CurrentCondition>
+        get() = _location
 
     fun updateZipCode(zipCode: String) {
-        if (zipCode != this.zipCode){
+        if (zipCode != this.zipCode) {
             this.zipCode = zipCode
             _enableButton.value = isValidZipCode(zipCode)
         }
@@ -29,9 +34,22 @@ class SearchViewModel @Inject constructor(private val service: Api) : ViewModel(
         return zipCode.length == 5 && zipCode.all { it.isDigit() }
     }
 
-    fun loadData() = runBlocking {
-        launch{
-            _currentConditions.value = zipCode?.let { service.getCurrentConditions(it) }
+    fun loadLatLon() = runBlocking {
+        launch {
+            _location.value = service.getCurrentConditions(lat.toString(), lon.toString())
+        }
+    }
+
+    fun loadZip() = runBlocking {
+        launch {
+            _location.value = zipCode?.let { service.getCurrentCondition(it) }
+        }
+    }
+
+    fun updateLatLong(latitude: Double, longitude: Double) {
+        if (latitude != this.lat && longitude != this.lon) {
+            this.lat = latitude
+            this.lon = longitude
         }
     }
 }

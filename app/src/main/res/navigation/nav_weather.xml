@@ -10,7 +10,7 @@
         android:label="SearchFragment">
         <action
             android:id="@+id/action_searchFragment_to_currentConditionFragment"
-            app:destination="@id/fragment_current" />
+            app:destination="@id/fragment_current"/>
     </fragment>
 
     <fragment
@@ -18,20 +18,20 @@
         android:name="com.example.weatherapp.CurrentConditionFragment"
         android:label="CurrentConditionsFragment">
         <argument
-            android:name="zipCode"
-            app:argType="string" />
+            android:name="currentConditions"
+            app:argType="com.example.weatherapp.CurrentCondition" />
         <action
             android:id="@+id/action_currentConditionFragment_to_ForecastFragment"
-            app:destination="@id/fragment_forecast" />
+            app:destination="@id/fragment_forecast"/>
     </fragment>
 
     <fragment
         android:id="@+id/fragment_forecast"
         android:name="com.example.weatherapp.ForecastFragment"
-        android:label="ForecastFragment">
+        android:label="ForecastFragment" >
         <argument
-            android:name="zipCode"
-            app:argType="string" />
+            android:name="coordinates"
+            app:argType="com.example.weatherapp.Coordinates" />
     </fragment>
 
 </navigation>

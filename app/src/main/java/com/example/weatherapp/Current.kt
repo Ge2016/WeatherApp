@@ -11,5 +11,5 @@ data class Current (
     @Json(name = "temp_min") val tempMin: Float,
     @Json(name = "temp_max") val tempMax: Float,
     val pressure: Float,
-    val humidity: Float
+    val humidity: Float,
     ) : Parcelable
