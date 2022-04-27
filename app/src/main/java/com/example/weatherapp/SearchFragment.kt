@@ -125,10 +125,7 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
             if (flag) {
                 flag = false
                 requestNotificationPermission()
-                createNotificationChannel()
-                createNotification()
-                val intent = Intent(context, MainActivity::class.java)
-                startActivity(intent)
+                requireContext().startService(Intent(requireContext(), LocalService::class.java))
                 binding.notificationButton.text = context?.getString(R.string.notificationOff)
             } else {
                 flag = true
@@ -211,34 +208,5 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
         } else {
             permissionRequest.launch(arrayOf(Manifest.permission.FOREGROUND_SERVICE))
         }
-    }
-
-    private fun createNotificationChannel(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("C1", "Notification Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            val notificationManager: NotificationManager =
-                activity?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun createNotification(){
-        val intent = Intent(context, LocalService::class.java).apply{
-            var flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this.context, 0,
-            intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-        val builder = NotificationCompat.Builder(this.requireContext(), "C2")
-            .setSmallIcon(R.drawable.bell).setContentTitle("Weather Notification")
-            .setContentText("Check updated weather condition.")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-
-        NotificationManagerCompat.from(this.requireContext()).notify(0, builder.build())
     }
 }
