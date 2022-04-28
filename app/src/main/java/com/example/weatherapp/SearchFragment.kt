@@ -120,6 +120,7 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
                 binding.notificationButton.text = context?.getString(R.string.notificationOff)
             } else {
                 flag = true
+                requireContext().stopService(Intent(requireContext(), LocalService::class.java))
                 binding.notificationButton.visibility = View.GONE
             }
         }
