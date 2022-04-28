@@ -1,14 +1,18 @@
 package com.example.weatherapp
 
+import android.Manifest
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.*
 import java.util.*
 
 class LocalService : Service() {
@@ -22,15 +26,16 @@ class LocalService : Service() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         createNotificationChannel()
+        startNotification()
 
         val pendingIntent: PendingIntent =
-            Intent(this, Api::class.java).let { notificationIntent ->
+            Intent(this, MainActivity::class.java).let { notificationIntent ->
                 PendingIntent.getActivity(this, 0, notificationIntent,
                     PendingIntent.FLAG_IMMUTABLE)}
 
         val notification: Notification = Notification.Builder(this, "1")
             .setSmallIcon(R.drawable.bell).setContentTitle("Weather Notification")
-            .setContentText("Check updated weather condition.")
+            .setContentText("Check updated weather condition.").setAutoCancel(true)
             .setContentIntent(pendingIntent).build()
 
         startForeground(1, notification)
@@ -54,6 +59,36 @@ class LocalService : Service() {
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun startNotification(){
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        val locationRequest = LocationRequest.create()
+        locationRequest.interval = 10000L
+        locationRequest.fastestInterval = 5000L
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+        val locationProvider = LocationServices.getFusedLocationProviderClient(this)
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult.locations.forEach{
+                }
+            }
+        }
+        locationProvider.requestLocationUpdates(
+            locationRequest, locationCallback, Looper.getMainLooper())
+
+        locationProvider.lastLocation.addOnSuccessListener {
+            Log.d("Notification Service", it.toString())
         }
     }
 
